@@ -1,5 +1,0 @@
-[api]
-enable_blockchain_explorer = true
-state_update_timeout = 10000
-public_api_address = "127.0.0.1:8001"
-private_api_address = "127.0.0.1:8101"
