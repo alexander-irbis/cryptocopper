@@ -1,0 +1,19 @@
+[package]
+name = "copper"
+version = "0.1.0"
+authors = ["Alexander Irbis <irbis.labs@gmail.com>"]
+
+
+[patch.crates-io]
+exonum = { path = "/home/stalker/devel/lib/exonum/exonum" }
+
+
+[dependencies]
+exonum = { version = "0.3", features = [] }
+exonum-configuration = { git = "https://github.com/exonum/exonum-configuration" }
+iron = "0.5.1"
+bodyparser = "0.7.0"
+router = "0.5.1"
+serde = "1.0"
+serde_json = "1.0"
+serde_derive = "1.0"

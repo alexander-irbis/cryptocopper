@@ -1,0 +1,20 @@
+[common.consensus_config]
+peers_timeout = 10000
+round_timeout = 3000
+status_timeout = 5000
+txs_block_limit = 1000
+
+[common.consensus_config.timeout_adjuster]
+timeout = 500
+type = "Constant"
+
+[common.services_config]
+
+[node]
+addr = "127.0.0.1:6001"
+
+[node.services_public_configs]
+
+[node.validator_keys]
+consensus_key = "04b8ff2bd4d24e40dcbbf9801acd13fe542365deb1dd216b13774ac05964270e"
+service_key = "3a43807d5821b513fa3f8e499afb347e1dc4a29bb883298ac9e282fc7be64ff6"
