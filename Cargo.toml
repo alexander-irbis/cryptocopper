@@ -4,10 +4,6 @@ version = "0.1.0"
 authors = ["Alexander Irbis <irbis.labs@gmail.com>"]
 
 
-[patch.crates-io]
-exonum = { path = "/home/stalker/devel/lib/exonum/exonum" }
-
-
 [dependencies]
 exonum = { version = "0.3", features = [] }
 exonum-configuration = { git = "https://github.com/exonum/exonum-configuration" }
