@@ -17,7 +17,6 @@ use exonum_configuration::ConfigurationServiceFactory;
 use service::currency;
 
 
-
 fn main() {
     exonum::helpers::init_logger().unwrap();
     NodeBuilder::new()
