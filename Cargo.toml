@@ -1,5 +1,5 @@
 [package]
-name = "copper"
+name = "cryptocopper"
 version = "0.1.0"
 authors = ["Alexander Irbis <irbis.labs@gmail.com>"]
 
@@ -9,11 +9,11 @@ exonum = { git = "https://github.com/alexander-irbis/exonum" }
 
 
 [dependencies]
-exonum = { version = "0.3", features = [] }
+exonum = { version = "0.4", features = [] }
 exonum-configuration = { git = "https://github.com/alexander-irbis/exonum-configuration" }
-iron = "0.5.1"
-bodyparser = "0.7.0"
-router = "0.5.1"
+iron = "0.6"
+bodyparser = "0.8.0"
+router = "0.6"
 serde = "1.0"
 serde_json = "1.0"
 serde_derive = "1.0"

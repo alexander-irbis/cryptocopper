@@ -1,8 +1,10 @@
 use exonum::api::Api;
 use exonum::blockchain::{Service, Transaction, ApiContext};
+use exonum::crypto::Hash;
 use exonum::encoding;
 use exonum::helpers::fabric::{ServiceFactory, Context};
-use exonum::messages::{RawTransaction, FromRaw};
+use exonum::messages::RawTransaction;
+use exonum::storage::Snapshot;
 
 use iron::Handler;
 use router::Router;
@@ -56,5 +58,9 @@ impl Service for CurrencyService {
         };
         api.wire(&mut router);
         Some(Box::new(router))
+    }
+
+    fn state_hash(&self, _snapshot: &Snapshot) -> Vec<Hash> {
+        Vec::new()
     }
 }
