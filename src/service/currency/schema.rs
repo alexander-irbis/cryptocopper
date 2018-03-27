@@ -1,24 +1,30 @@
 use exonum::crypto::PublicKey;
-use exonum::storage::{Fork, MapIndex};
+use exonum::storage::{Fork, MapIndex, Snapshot};
 
 use super::wallet::Wallet;
 
-
-pub struct CurrencySchema<'a> {
-    view: &'a mut Fork,
+pub struct CurrencySchema<T> {
+    view: T,
 }
 
-impl<'a> CurrencySchema<'a> {
-    pub fn new(view: &'a mut Fork) -> Self {
+impl<T: AsRef<Snapshot>> CurrencySchema<T> {
+    pub fn new(view: T) -> Self {
         CurrencySchema { view }
     }
 
-    pub fn wallets(&mut self) -> MapIndex<&mut Fork, PublicKey, Wallet> {
-        MapIndex::new("copper.wallets", self.view)
+    pub fn wallets(&self) -> MapIndex<&Snapshot, PublicKey, Wallet> {
+        MapIndex::new("copper.wallets", self.view.as_ref())
     }
 
     // Utility method to quickly get a separate wallet from the storage
-    pub fn wallet(&mut self, pub_key: &PublicKey) -> Option<Wallet> {
+    pub fn wallet(&self, pub_key: &PublicKey) -> Option<Wallet> {
         self.wallets().get(pub_key)
+    }
+}
+
+impl<'a> CurrencySchema<&'a mut Fork> {
+    /// Returns a mutable version of the wallets table.
+    pub fn wallets_mut(&mut self) -> MapIndex<&mut Fork, PublicKey, Wallet> {
+        MapIndex::new("copper.wallets", self.view)
     }
 }

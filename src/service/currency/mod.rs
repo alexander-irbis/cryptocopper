@@ -1,13 +1,13 @@
 pub mod api;
 pub mod schema;
 pub mod service;
-pub mod tx;
+pub mod transactions;
 pub mod wallet;
 
 pub use self::api::*;
 pub use self::schema::*;
 pub use self::service::*;
-pub use self::tx::*;
+pub use self::transactions::*;
 pub use self::wallet::*;
 
 

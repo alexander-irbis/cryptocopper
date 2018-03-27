@@ -1,5 +1,5 @@
 use exonum::crypto::PublicKey;
-use exonum::blockchain::{Transaction};
+use exonum::blockchain::{Transaction, ExecutionResult};
 use exonum::storage::Fork;
 use exonum::messages::Message;
 
@@ -7,31 +7,23 @@ use exonum::messages::Message;
 use super::*;
 
 
-message! {
-    struct TxCreateWallet {
-        const TYPE = SERVICE_ID;
-        const ID = TX_CREATE_WALLET_ID;
-        const SIZE = 40;
+transactions! {
+    CurrencyTransactions {
+        const SERVICE_ID = SERVICE_ID;
 
-        field pub_key:     &PublicKey  [00 => 32]
-        field name:        &str        [32 => 40]
+        struct TxCreateWallet {
+            pub_key: &PublicKey,
+            name: &str,
+        }
+
+        struct TxTransfer {
+            from: &PublicKey,
+            to: &PublicKey,
+            amount: u64,
+            seed: u64,
+        }
     }
 }
-
-
-message! {
-    struct TxTransfer {
-        const TYPE = SERVICE_ID;
-        const ID = TX_TRANSFER_ID;
-        const SIZE = 80;
-
-        field from:        &PublicKey  [00 => 32]
-        field to:          &PublicKey  [32 => 64]
-        field amount:      u64         [64 => 72]
-        field seed:        u64         [72 => 80]
-    }
-}
-
 
 
 impl Transaction for TxCreateWallet {
@@ -39,13 +31,14 @@ impl Transaction for TxCreateWallet {
         self.verify_signature(self.pub_key())
     }
 
-    fn execute(&self, view: &mut Fork) {
+    fn execute(&self, view: &mut Fork) -> ExecutionResult {
         let mut schema = CurrencySchema::new(view);
         if schema.wallet(self.pub_key()).is_none() {
             let wallet = Wallet::new(self.pub_key(), self.name(), INIT_BALANCE);
             println!("Create the wallet: {:?}", wallet);
-            schema.wallets().put(self.pub_key(), wallet)
+            schema.wallets_mut().put(self.pub_key(), wallet)
         }
+        Ok(())
     }
 }
 
@@ -56,7 +49,7 @@ impl Transaction for TxTransfer {
             self.verify_signature(self.from())
     }
 
-    fn execute(&self, view: &mut Fork) {
+    fn execute(&self, view: &mut Fork) -> ExecutionResult {
         let mut schema = CurrencySchema::new(view);
         let sender = schema.wallet(self.from());
         let receiver = schema.wallet(self.to());
@@ -68,10 +61,11 @@ impl Transaction for TxTransfer {
                 println!("Transfer between wallets: {:?} => {:?}",
                     sender,
                     receiver);
-                let mut wallets = schema.wallets();
+                let mut wallets = schema.wallets_mut();
                 wallets.put(self.from(), sender);
                 wallets.put(self.to(), receiver);
             }
         }
+        Ok(())
     }
 }

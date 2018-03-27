@@ -2,8 +2,8 @@ use exonum::api::Api;
 use exonum::blockchain::{Service, Transaction, ApiContext};
 use exonum::crypto::Hash;
 use exonum::encoding;
-use exonum::helpers::fabric::{ServiceFactory, Context};
-use exonum::messages::RawTransaction;
+use exonum::helpers::fabric::{self, Context};
+use exonum::messages::{Message, RawTransaction};
 use exonum::storage::Snapshot;
 
 use iron::Handler;
@@ -15,13 +15,13 @@ use super::*;
 
 /// A currency service creator for the `NodeBuilder`
 #[derive(Debug)]
-pub struct CurrencyServiceFactory;
+pub struct ServiceFactory;
 
 #[derive(Debug)]
 pub struct CurrencyService;
 
 
-impl ServiceFactory for CurrencyServiceFactory {
+impl fabric::ServiceFactory for ServiceFactory {
     fn make_service(&mut self, _: &Context) -> Box<Service> {
         Box::new(CurrencyService)
     }
@@ -29,12 +29,16 @@ impl ServiceFactory for CurrencyServiceFactory {
 
 
 impl Service for CurrencyService {
+    fn service_id(&self) -> u16 {
+        SERVICE_ID
+    }
+
     fn service_name(&self) -> &'static str {
         SERVICE_NAME
     }
 
-    fn service_id(&self) -> u16 {
-        SERVICE_ID
+    fn state_hash(&self, _snapshot: &Snapshot) -> Vec<Hash> {
+        Vec::new()
     }
 
     fn tx_from_raw(&self, raw: RawTransaction) -> Result<Box<Transaction>, encoding::Error> {
@@ -58,9 +62,5 @@ impl Service for CurrencyService {
         };
         api.wire(&mut router);
         Some(Box::new(router))
-    }
-
-    fn state_hash(&self, _snapshot: &Snapshot) -> Vec<Hash> {
-        Vec::new()
     }
 }

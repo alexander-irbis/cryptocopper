@@ -7,13 +7,15 @@ use exonum::node::{TransactionSend, ApiSender};
 use serde::Deserialize;
 use serde_json;
 
+use iron::headers::ContentType;
+use iron::modifiers::Header;
 use iron::prelude::*;
+use iron::status::Status;
 use router::Router;
 
-use super::tx::*;
+use super::transactions::*;
 use super::wallet::*;
 use super::schema::*;
-
 
 #[serde(untagged)]
 #[derive(Clone, Serialize, Deserialize)]
@@ -71,11 +73,17 @@ impl CryptocurrencyApi {
     fn get_wallet(&self, req: &mut Request) -> IronResult<Response> {
         let path = req.url.path();
         let wallet_key = path.last().unwrap();
-        let public_key = PublicKey::from_hex(wallet_key).map_err(ApiError::FromHex)?;
+        let public_key = PublicKey::from_hex(wallet_key).map_err(|e| {
+            IronError::new(e, (
+                Status::BadRequest,
+                Header(ContentType::json()),
+                r#""Invalid request param: `pub_key`""#,
+            ))
+        })?;
 
         let wallet = {
-            let mut view = self.blockchain.fork();
-            let mut schema = CurrencySchema::new(&mut view);
+            let mut snapshot = self.blockchain.snapshot();
+            let mut schema = CurrencySchema::new(&snapshot);
             schema.wallet(&public_key)
         };
 
@@ -89,7 +97,7 @@ impl CryptocurrencyApi {
     /// Endpoint for dumping all wallets from the storage.
     fn get_wallets(&self, _: &mut Request) -> IronResult<Response> {
         let mut view = self.blockchain.fork();
-        let mut schema = CurrencySchema::new(&mut view);
+        let schema = CurrencySchema::new(&mut view);
         let idx = schema.wallets();
         let wallets: Vec<Wallet> = idx.values().collect();
 
@@ -109,8 +117,8 @@ impl CryptocurrencyApi {
                 let json = TransactionResponse { tx_hash };
                 self.ok_response(&serde_json::to_value(&json).unwrap())
             }
-            Ok(None) => Err(ApiError::IncorrectRequest("Empty request body".into()))?,
-            Err(e) => Err(ApiError::IncorrectRequest(Box::new(e)))?,
+            Ok(None) => Err(ApiError::BadRequest("Empty request body".into()))?,
+            Err(e) => Err(ApiError::BadRequest(e.to_string()))?,
         }
     }
 }

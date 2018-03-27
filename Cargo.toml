@@ -4,13 +4,9 @@ version = "0.1.0"
 authors = ["Alexander Irbis <irbis.labs@gmail.com>"]
 
 
-[patch.crates-io]
-exonum = { git = "https://github.com/alexander-irbis/exonum" }
-
-
 [dependencies]
-exonum = { version = "0.4", features = [] }
-exonum-configuration = { git = "https://github.com/alexander-irbis/exonum-configuration" }
+exonum = "0.6"
+exonum-configuration = "0.6"
 iron = "0.6"
 bodyparser = "0.8.0"
 router = "0.6"

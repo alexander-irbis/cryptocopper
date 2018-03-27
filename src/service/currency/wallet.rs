@@ -3,11 +3,9 @@ use exonum::crypto::PublicKey;
 
 encoding_struct! {
     struct Wallet {
-        const SIZE = 48;
-
-        field pub_key:            &PublicKey  [00 => 32]
-        field name:               &str        [32 => 40]
-        field balance:            u64         [40 => 48]
+        pub_key: &PublicKey,
+        name: &str,
+        balance: u64,
     }
 }
 
